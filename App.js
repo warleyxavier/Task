@@ -1,21 +1,28 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component } from "react";
+import { Font } from "expo";
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
-    );
-  }
+import Agenda from "./src/screens/Agenda";
+
+export default class App extends Component {
+
+  	state = {
+		fontLoaded: false,	
+	}
+
+	async componentDidMount() {
+
+		await Font.loadAsync({
+			Lato: require("./assets/fonts/Lato.ttf"),
+		});
+
+		this.setState({ fontLoaded: true });
+
+	}
+
+    render() {
+		return (
+			this.state.fontLoaded ? <Agenda /> : null
+		); 		
+	}
+	
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
