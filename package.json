@@ -11,7 +11,8 @@
     "expo-cli": "^2.11.7",
     "moment": "^2.24.0",
     "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz"
+    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-ionicons": "^4.5.5"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
