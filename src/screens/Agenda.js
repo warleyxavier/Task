@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
-//import Icon from "react-native-ionicons";
 import "moment/locale/pt-br";
 
 import CommomStyles from "../styles/CommomStyles";
@@ -17,17 +17,17 @@ export default class App extends Component {
             {id: Math.random(), description: "Tarefa 3", estimateAt: new Date(), doneAt: new Date()},
             {id: Math.random(), description: "Tarefa 4", estimateAt: new Date(), doneAt: null},
             {id: Math.random(), description: "Tarefa 5", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 6", estimateAt: new Date(), doneAt: new Date()},
+            {id: Math.random(), description: "Tarefa 6", estimateAt: new Date(), doneAt: null},
             {id: Math.random(), description: "Tarefa 7", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 8", estimateAt: new Date(), doneAt: new Date()},
+            {id: Math.random(), description: "Tarefa 8", estimateAt: new Date(), doneAt: null},
             {id: Math.random(), description: "Tarefa 9", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 10", estimateAt: new Date(), doneAt: new Date()},
+            {id: Math.random(), description: "Tarefa 10", estimateAt: new Date(), doneAt: null},
             {id: Math.random(), description: "Tarefa 11", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 12", estimateAt: new Date(), doneAt: new Date()},
+            {id: Math.random(), description: "Tarefa 12", estimateAt: new Date(), doneAt: null},
             {id: Math.random(), description: "Tarefa 13", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 14", estimateAt: new Date(), doneAt: new Date()},
+            {id: Math.random(), description: "Tarefa 14", estimateAt: new Date(), doneAt: null},
             {id: Math.random(), description: "Tarefa 15", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 16", estimateAt: new Date(), doneAt: new Date()},
+            {id: Math.random(), description: "Tarefa 16", estimateAt: new Date(), doneAt: null},
         ],
         visibleTasks: [],
         showDoneTasks: true,
@@ -53,7 +53,7 @@ export default class App extends Component {
 
     toggleFilter = () => {
     
-        this.setState({showDoneTasks: !showDoneTasks}, this.filterTasks);
+        this.setState({showDoneTasks: !this.state.showDoneTasks}, this.filterTasks);
 
     }
 
@@ -64,7 +64,7 @@ export default class App extends Component {
         tasks.forEach( task => {
 
             if (task.id === id) {
-                task.doneAt = task.doneAt ? null : new DataCue();
+                task.doneAt = task.doneAt ? null : new Date();
                 return true;
             }
 
@@ -80,23 +80,19 @@ export default class App extends Component {
                 <ImageBackground source={todayImage} style={styles.background}>
                     <View style = {styles.iconBar}>
                         <TouchableOpacity onPress = {this.toggleFilter}>
-                            <Icon
-                                name = { this.state.showDoneTasks ? "md-eye" : "md-eye-with-line" }
-                                size = { 30 }
-                                color = { CommomStyles.colors.secondary }
-                            />   
+                            <Icon name = { this.state.showDoneTasks ? "md-eye": "md-eye-off" } size = {30} color = {CommomStyles.colors.secondary} />    
                         </TouchableOpacity>
                     </View>
                     <View style={styles.titleBar}>
                         <Text style={styles.title}>Hoje </Text> 
-                        <Text style={styles.subTitle}> {moment().locale("pt-br").format("ddd, D [de] MMMM")} </Text>  
+                        <Text style={styles.subTitle}>{moment().locale("pt-br").format("ddd, D [de] MMMM")}</Text>  
                     </View>
                 </ImageBackground>
                 <View style={styles.tasksContainer}>                  
                     <FlatList
                         data = {this.state.visibleTasks}
                         keyExtractor = { item => `${item.id}` }
-                        renderItem = { ({item}) => <Task {...item} /> }
+                        renderItem = { ({item}) => <Task {...item} toggleTask = {this.toggleTask} /> }
                     />                    
                 </View>
             </View>

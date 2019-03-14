@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
-//import Icon from "react-native-ionicons";
 import "moment/locale/pt-br";
+
+
 
 import CommomStyles from "../styles/CommomStyles";
 
@@ -10,25 +12,22 @@ export default class Task extends Component {
 
     render() {
         return (
-            <View styles = {styles.container}>
-                <TouchableWithoutFeedback
-                    onPress = { () => this.props.toggleTask(this.props.id) }
-                >
-                    <View style = {styles.checkContainer}>                 
+            <View style = {styles.container}>    
+                <View style = {styles.checkContainer}>  
+                    <TouchableWithoutFeedback onPress = { () => this.props.toggleTask(this.props.id) } >               
                         {
                             this.props.doneAt !== null ?
                                 <View style = {styles.done}>
-                                   <Icon name = "md-check" size = {20} color = {CommomStyles.colors.secondary} /> 
+                                    <Icon name = "md-checkmark" size = {20} color = {CommomStyles.colors.secondary} />     
                                 </View> 
                             :
                                 <View style = {styles.pending} />
-                        }                
-                    </View>
-                </TouchableWithoutFeedback>
+                        }   
+                    </TouchableWithoutFeedback>                  
+                </View>            
                 <View> 
-                    <Text style = {[styles.description, this.props.doneAt !== null ? {textDecorationLine: "line-through"} : {} ]}> {this.props.estimateAt} </Text>
-                    
-                    <Text style = {styles.date}> {moment(this.props.estimateAt).locale("pt-br").format("ddd, D [de] MMMM")}  </Text>              
+                    <Text style = {[styles.description, this.props.doneAt !== null ? {textDecorationLine: "line-through"} : {} ]}> {this.props.description} </Text>     
+                    <Text style = {styles.date}>{moment(this.props.estimateAt).locale("pt-br").format("ddd, D [de] MMMM")}</Text>                    
                 </View>
             </View>
         );
@@ -38,7 +37,6 @@ export default class Task extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         paddingVertical: 10,
         flexDirection: "row",
         borderBottomWidth: 1,
