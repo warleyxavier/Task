@@ -1,12 +1,15 @@
 import React, { Component } from "react";
-import { FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import ActionButton from "react-native-action-button";
 import moment from "moment";
 import "moment/locale/pt-br";
 
 import CommomStyles from "../styles/CommomStyles";
 import todayImage from "../../assets/imgs/today.jpg";
 import Task from "../components/Task";
+import TaskRegister from "../screens/TaskRegister";
+import console from "console";
 
 export default class App extends Component {
 
@@ -31,10 +34,26 @@ export default class App extends Component {
         ],
         visibleTasks: [],
         showDoneTasks: true,
+        showTaskRegister: false,
     }
 
     componentDidMount = () => {
         this.filterTasks();
+    }
+
+    addTask = task => {
+
+        const tasks = [...this.state.tasks];
+
+        tasks.push({
+            id: Math.random(),
+            description: task.description,
+            estimateAt: task.date,
+            doneAt: null,
+        });
+
+        this.setState({ tasks, showTaskRegister: false });
+
     }
 
     filterTasks = () => {
@@ -77,6 +96,13 @@ export default class App extends Component {
     render() {
 		return (
 			<View style={styles.container}>
+
+                <TaskRegister
+                    isVisible = { this.state.showTaskRegister }
+                    onSave = { this.addTask }
+                    onCancel = { () => this.setState({ showTaskRegister: false }) }
+                />
+
                 <ImageBackground source={todayImage} style={styles.background}>
                     <View style = {styles.iconBar}>
                         <TouchableOpacity onPress = {this.toggleFilter}>
@@ -92,9 +118,12 @@ export default class App extends Component {
                     <FlatList
                         data = {this.state.visibleTasks}
                         keyExtractor = { item => `${item.id}` }
-                        renderItem = { ({item}) => <Task {...item} toggleTask = {this.toggleTask} /> }
+                        renderItem = { ({ item }) => <Task {...item} toggleTask = {this.toggleTask} /> }
                     />                    
                 </View>
+                <ActionButton 
+                    buttonColor = {CommomStyles.colors.today}
+                    onPress = { () => { this.setState( { showTaskRegister: true } ) } } />
             </View>
 		); 	
     }

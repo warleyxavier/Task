@@ -4,8 +4,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import "moment/locale/pt-br";
 
-
-
 import CommomStyles from "../styles/CommomStyles";
 
 export default class Task extends Component {
@@ -26,7 +24,7 @@ export default class Task extends Component {
                     </TouchableWithoutFeedback>                  
                 </View>            
                 <View> 
-                    <Text style = {[styles.description, this.props.doneAt !== null ? {textDecorationLine: "line-through"} : {} ]}> {this.props.description} </Text>     
+                    <Text style = {[styles.description, this.props.doneAt !== null ? {textDecorationLine: "line-through"} : {} ]}> {this.props.description} </Text>  
                     <Text style = {styles.date}>{moment(this.props.estimateAt).locale("pt-br").format("ddd, D [de] MMMM")}</Text>                    
                 </View>
             </View>
