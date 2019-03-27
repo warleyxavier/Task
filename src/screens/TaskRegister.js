@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { Alert, Modal, StyleSheet, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
 import CommomStyles from "../styles/CommomStyles";
 
@@ -25,34 +25,34 @@ export default class TaskRegister extends Component {
 
     render() {
         return (
-            <Modal 
+            <Modal
                 onRequestClose = { this.props.onCancel }
                 animationType = "slide"
                 visible = { this.props.isVisible }
-            >
-                <TouchableWithoutFeedback onPress = { this.props.onCancel }>
-                    <View style = {styles.offset} />
-                </TouchableWithoutFeedback>    
-                <View style = {styles.container}>
-                    <Text style = {styles.header}> Nova Tarefa! </Text>
-                    <TextInput 
-                        style = {styles.input}
-                        placeholder = "Descrição"
-                        onChangeText = { description => this.setState({ description }) }
-                        value = {this.state.description}
-                    />
-                    <View style = {styles.buttonContainer}>
-                        <TouchableOpacity onPress = {this.props.onCancel}>
-                            <Text style = {styles.button} >Cancelar</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress = {this.props.onSave}>
-                            <Text style = {styles.button}>Salvar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View> 
-                <TouchableWithoutFeedback onPress = { this.props.onCancel }>
-                    <View style = { styles.offset } />
-                </TouchableWithoutFeedback>
+                transparent = {true}
+            >  
+                <KeyboardAvoidingView style = {styles.modalContainer}>
+
+                    <TouchableWithoutFeedback onPress = { this.props.onCancel }>
+                        <View style = {styles.offset} />
+                    </TouchableWithoutFeedback> 
+
+                    <View style = {styles.container}>
+                        <Text style = {styles.header}> Nova Tarefa! </Text>  
+                        <TextInput 
+                            style = {styles.input}
+                            placeholder = "Descrição"
+                            onChangeText = { description => this.setState({ description }) }
+                            value = {this.state.description}
+                        />
+
+                    </View> 
+
+                    <TouchableWithoutFeedback onPress = { this.props.onCancel }>
+                        <View style = {styles.offset} />
+                    </TouchableWithoutFeedback> 
+
+                </KeyboardAvoidingView>
             </Modal>
         );
     }
@@ -60,13 +60,23 @@ export default class TaskRegister extends Component {
 }
 
 const styles = StyleSheet.create({
+    modalContainer: {
+        flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        alignItems: "center",
+        justifyContent: "center",
+    },
     container: {
         backgroundColor: "white",
         justifyContent: "space-between",
+        padding: 10,
+        width: "90%",
+        borderRadius: 9,
     },  
     offset: {
         flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        //backgroundColor: "rgba(52, 52, 52, 0.3)",
+        //opacity: 0.5,
     },
     button: {
         margin: 20,
@@ -80,19 +90,21 @@ const styles = StyleSheet.create({
         textAlign: "center",
         padding: 15,
         fontSize: 15,
+        fontWeight: "bold",
+        borderRadius: 6,
     },  
     input: {
         fontFamily: CommomStyles.fontFamily,
-        width: "90%",
         height: 40,
         marginTop: 10,
-        marginLeft: 10,
-        backgroundColor: "white",
-        borderColor: "#e3e3e3",
+        paddingLeft: 7,
+        backgroundColor: "#E7E4EB",
         borderRadius: 6,
+        color: "#282629",
     },
     buttonContainer: {
         flexDirection: "row",
         justifyContent: "flex-end",
+        backgroundColor: "yellow",
     },
 });
