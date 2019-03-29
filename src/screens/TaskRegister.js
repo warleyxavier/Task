@@ -14,7 +14,7 @@ export default class TaskRegister extends Component {
     onSave = () => {
 
         if (!this.state.description.trim()) {
-            Alert("Dados inválidos!", "Informe uma descrição!");
+            Alert.alert("Dados inválidos!", "Informe uma descrição!");
             return;
         }
 
@@ -89,7 +89,7 @@ export default class TaskRegister extends Component {
                             <TouchableOpacity style = {[styles.button, styles.cancelButton]} onPress = {this.props.onCancel}>
                                 <Text style = {styles.textButton}>Cancelar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style = {[styles.button, styles.saveButton]} onPress = {this.props.onSave}>
+                            <TouchableOpacity style = {[styles.button, styles.saveButton]} onPress = {() => this.onSave()}>
                                 <Text style = {styles.textButton}>Salvar</Text>
                             </TouchableOpacity>
                         </View>

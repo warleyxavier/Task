@@ -52,7 +52,7 @@ export default class App extends Component {
             doneAt: null,
         });
 
-        this.setState({ tasks, showTaskRegister: false });
+        this.setState({ tasks, showTaskRegister: false }, this.filterTasks);
 
     }
 
