@@ -1,5 +1,7 @@
 import React, {Component} from "react";
-import { Alert, Modal, StyleSheet, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { Alert, DatePickerAndroid, DatePickerIOS, Modal, Platform, StyleSheet, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import moment from "moment";
+import "moment/locale/pt-br";
 
 import CommomStyles from "../styles/CommomStyles";
 
@@ -23,7 +25,48 @@ export default class TaskRegister extends Component {
 
     }
 
+    handleDateAndroidChanged = () => {
+
+        DatePickerAndroid.open({
+            date: this.state.date
+        }).then( e => {
+
+            if (e.action != DatePickerAndroid.dismissedAction) {
+
+                const momentDate = moment(this.state.date);
+
+                momentDate.date(e.day);
+                momentDate.month(e.month);
+                momentDate.year(e.year);
+
+                this.setState({ date: momentDate.toDate() });
+
+            }
+        });
+
+    }
+
     render() {
+
+        let datePicker = null;
+
+        if (Platform.OS === "ios") {
+
+            datePicker = <DatePickerIOS 
+                            mode = "date" 
+                            date = { this.state.date } 
+                            onDateChange = { date => this.setState({ date }) } />
+
+        } else {
+
+            datePicker = (
+              <TouchableOpacity onPress = { this.handleDateAndroidChanged }>
+                <Text style = { styles.date }> {moment(this.state.date).locale("pt-br").format("ddd, D [de] MMMM [de] YYYY")} </Text>
+              </TouchableOpacity>  
+            );
+
+        };
+
         return (
             <Modal
                 onRequestClose = { this.props.onCancel }
@@ -31,11 +74,7 @@ export default class TaskRegister extends Component {
                 visible = { this.props.isVisible }
                 transparent = {true}
             >  
-                <KeyboardAvoidingView style = {styles.modalContainer}>
-
-                    <TouchableWithoutFeedback onPress = { this.props.onCancel }>
-                        <View style = {styles.offset} />
-                    </TouchableWithoutFeedback> 
+                <KeyboardAvoidingView style = {styles.modalContainer}>                    
 
                     <View style = {styles.container}>
                         <Text style = {styles.header}> Nova Tarefa! </Text>  
@@ -45,12 +84,16 @@ export default class TaskRegister extends Component {
                             onChangeText = { description => this.setState({ description }) }
                             value = {this.state.description}
                         />
-
-                    </View> 
-
-                    <TouchableWithoutFeedback onPress = { this.props.onCancel }>
-                        <View style = {styles.offset} />
-                    </TouchableWithoutFeedback> 
+                        {datePicker}
+                        <View style = {styles.buttonContainer}>
+                            <TouchableOpacity style = {[styles.button, styles.cancelButton]} onPress = {this.props.onCancel}>
+                                <Text style = {styles.textButton}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style = {[styles.button, styles.saveButton]} onPress = {this.props.onSave}>
+                                <Text style = {styles.textButton}>Salvar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>                      
 
                 </KeyboardAvoidingView>
             </Modal>
@@ -75,13 +118,31 @@ const styles = StyleSheet.create({
     },  
     offset: {
         flex: 1,
-        //backgroundColor: "rgba(52, 52, 52, 0.3)",
-        //opacity: 0.5,
+        backgroundColor: "black",
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        marginTop: 10,
+        justifyContent: "space-between",
     },
     button: {
-        margin: 20,
-        marginRight: 30,
+        borderRadius: 6,
+        height: 45,
+        width: "48%",
+        alignItems: "center",
+        justifyContent: "center",
         color: CommomStyles.colors.default,
+    },
+    cancelButton: {
+        backgroundColor: "#CD3333",
+    },
+    saveButton: {
+        backgroundColor: "#00CD66",
+    },
+    textButton: {
+        fontWeight: "bold",
+        color: "white",
+        fontSize: 15,
     },
     header: {
         fontFamily: CommomStyles.fontFamily,
@@ -102,9 +163,12 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         color: "#282629",
     },
-    buttonContainer: {
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        backgroundColor: "yellow",
+    date: {
+        fontFamily: CommomStyles.fontFamily,
+        fontSize: 20,
+        fontWeight: "bold",
+        marginTop: 20,
+        marginBottom: 10,
+        textAlign: "center",    
     },
 });
