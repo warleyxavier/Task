@@ -56,6 +56,14 @@ export default class App extends Component {
 
     }
 
+    deleteTask = id => {
+
+        const tasks = this.state.tasks.filter( task => task.id !== id);
+
+        this.setState({ tasks }, this.filterTasks);
+
+    }
+
     filterTasks = () => {
 
         let visibleTasks = null;
@@ -118,7 +126,7 @@ export default class App extends Component {
                     <FlatList
                         data = {this.state.visibleTasks}
                         keyExtractor = { item => `${item.id}` }
-                        renderItem = { ({ item }) => <Task {...item} toggleTask = {this.toggleTask} /> }
+                        renderItem = { ({ item }) => <Task {...item} toggleTask = {this.toggleTask} onDelete = {this.deleteTask} /> }
                     />                    
                 </View>
                 <ActionButton 
