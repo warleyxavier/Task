@@ -35,10 +35,12 @@ export default class Task extends Component {
 
 const styles = StyleSheet.create({
     container: {
+        marginHorizontal: 10,
+        marginVertical: 5,
         paddingVertical: 10,
         flexDirection: "row",
-        borderBottomWidth: 1,
-        borderColor: "#AAA",
+        backgroundColor: "#D3D3D3",
+        borderRadius: 6,
     },
     checkContainer: {
         alignItems: "center",
