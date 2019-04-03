@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Alert, FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { AsyncStorage, FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import ActionButton from "react-native-action-button";
 import moment from "moment";
@@ -9,36 +9,23 @@ import CommomStyles from "../styles/CommomStyles";
 import todayImage from "../../assets/imgs/today.jpg";
 import Task from "../components/Task";
 import TaskRegister from "../screens/TaskRegister";
-import console from "console";
 
 export default class App extends Component {
 
     state = {
-        tasks: [
-            {id: Math.random(), description: "Tarefa 1", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 2", estimateAt: new Date(), doneAt: null},
-            {id: Math.random(), description: "Tarefa 3", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 4", estimateAt: new Date(), doneAt: null},
-            {id: Math.random(), description: "Tarefa 5", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 6", estimateAt: new Date(), doneAt: null},
-            {id: Math.random(), description: "Tarefa 7", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 8", estimateAt: new Date(), doneAt: null},
-            {id: Math.random(), description: "Tarefa 9", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 10", estimateAt: new Date(), doneAt: null},
-            {id: Math.random(), description: "Tarefa 11", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 12", estimateAt: new Date(), doneAt: null},
-            {id: Math.random(), description: "Tarefa 13", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 14", estimateAt: new Date(), doneAt: null},
-            {id: Math.random(), description: "Tarefa 15", estimateAt: new Date(), doneAt: new Date()},
-            {id: Math.random(), description: "Tarefa 16", estimateAt: new Date(), doneAt: null},
-        ],
+        tasks: [],
         visibleTasks: [],
         showDoneTasks: true,
         showTaskRegister: false,
     }
 
-    componentDidMount = () => {
-        this.filterTasks();
+    componentDidMount = async () => {
+
+        const data = AsyncStorage.getItem("Tasks:tasks");
+        const tasks = JSON.parse(data) || [];
+
+        this.setState({ tasks }, this.filterTasks());
+
     }
 
     addTask = task => {
@@ -75,6 +62,8 @@ export default class App extends Component {
         }
 
         this.setState({ visibleTasks });
+
+        AsyncStorage.setItem("Tasks:tasks", JSON.stringify(this.state.tasks));
 
     }
 
