@@ -1,10 +1,10 @@
 {
-  "devToolsPort": 19002,
   "expoServerPort": 19000,
+  "webpackServerPort": null,
+  "expoServerNgrokUrl": "https://cf-guv.anonymous.task.exp.direct",
+  "packagerNgrokUrl": "https://packager.cf-guv.anonymous.task.exp.direct",
+  "ngrokPid": 7124,
   "packagerPort": 19001,
-  "packagerPid": 7676,
-  "expoServerNgrokUrl": "https://8g-kmj.anonymous.task.exp.direct",
-  "packagerNgrokUrl": "https://packager.8g-kmj.anonymous.task.exp.direct",
-  "ngrokPid": 2672,
-  "webpackServerPort": null
+  "packagerPid": 8320,
+  "devToolsPort": 19002
 }

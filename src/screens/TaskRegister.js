@@ -6,10 +6,18 @@ import "moment/locale/pt-br";
 import CommomStyles from "../styles/CommomStyles";
 
 const initialState = {description: "", date: new Date()};
-
 export default class TaskRegister extends Component {
 
     state = { ...initialState };
+
+    constructor(props) {
+        super(props);
+        this.clearState();
+    }
+
+    clearState() {
+        state = { ...initialState };
+    }
 
     onSave = () => {
 
@@ -70,6 +78,7 @@ export default class TaskRegister extends Component {
         return (
             <Modal
                 onRequestClose = { this.props.onCancel }
+                onShow = { this.clearState() }
                 animationType = "slide"
                 visible = { this.props.isVisible }
                 transparent = {true}

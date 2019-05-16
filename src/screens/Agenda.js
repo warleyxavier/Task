@@ -9,7 +9,6 @@ import CommomStyles from "../styles/CommomStyles";
 import todayImage from "../../assets/imgs/today.jpg";
 import Task from "../components/Task";
 import TaskRegister from "../screens/TaskRegister";
-
 export default class App extends Component {
 
     state = {
