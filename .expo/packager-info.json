@@ -3,8 +3,8 @@
   "webpackServerPort": null,
   "expoServerNgrokUrl": "https://cf-guv.anonymous.task.exp.direct",
   "packagerNgrokUrl": "https://packager.cf-guv.anonymous.task.exp.direct",
-  "ngrokPid": 7124,
+  "ngrokPid": 4828,
   "packagerPort": 19001,
-  "packagerPid": 8320,
+  "packagerPid": 1408,
   "devToolsPort": 19002
 }

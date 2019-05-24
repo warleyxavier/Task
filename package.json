@@ -7,6 +7,8 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "typedi": "^0.8.0",
+    "axios": "^0.18.0",
     "expo": "^32.0.0",
     "expo-cli": "^2.11.7",
     "moment": "^2.24.0",

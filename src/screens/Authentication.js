@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import { Alert, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { isNullOrUndefined } from "util";
+import { Container } from "typedi";
+import axios from "axios";
 
 import backgroundImage from "../../assets/imgs/login.jpg"
-
+import Config from "../../config/Config";
 export default class Authentication extends Component {
 
     RecordMode = { Register: 0, Login: 1 };
@@ -16,18 +19,111 @@ export default class Authentication extends Component {
         confirmPassword: '',
     }
 
+    onValidate() {
+
+        if (this.state.recordMode == this.RecordMode.Register) {
+
+            if (this.state.name.trim().length <= 0) {
+                Alert.alert('Atenção', 'Nome é de preenchimento obrigatório');
+                return false;
+            }
+
+        }
+
+        if (! this.state.email.includes('@')) {
+            Alert.alert('Atenção', 'Informe um E-Mail válido');
+            return false;
+        }
+
+        if (this.state.password.length <= 6 || (this.state.recordMode == this.RecordMode.Register && this.state.confirmPassword.length <= 0)) {
+            Alert.alert('Atenção', 'Senha é de preenchimento obrigatório');
+            return false;
+        }
+
+        if (this.state.recordMode == this.RecordMode.Register) {
+
+            if (this.state.password != this.state.confirmPassword) {
+                Alert.alert('Atenção', 'As senhas são diferentes!');
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
+
+    async makeLogin() {
+
+        try {
+                    
+            const response = await axios.create({
+                baseURL: Config.serverHost   
+            }).get(`usuarios/login/${this.state.email}/${this.state.password}`);
+
+            const token = response.data.token;
+
+            if (isNullOrUndefined(token)) {
+                const message = (!isNullOrUndefined(response.data.message) ? response.data.message : 'Não foi possível realizar o login!'); 
+                Alert.alert('Aviso', message);    
+                return;
+            }
+
+            await Container.set('web-token', token);
+
+            this.props.navigation.navigate('Home');
+
+        } catch (error) {
+            console.log(error);   
+        }
+
+    }
+
+    async makeRegister() {
+
+        try {
+        
+            await axios.create({
+                baseURL: Config.serverHost   
+            }).post('usuarios/', {
+                nome: this.state.name,
+                email: this.state.email,
+                senha: this.state.password,  
+            });
+
+            Alert.alert('Aviso', `Usuário ${this.state.name} criado com sucesso`);
+
+            this.setState({  recordMode: this.RecordMode.Login });
+
+            this.makeLogin();
+
+        } catch (error) {
+            console.log(erro);   
+        }
+
+    }
+
     makeLoginRegister = () => {
 
-        this.props.navigation.navigate('Home');
+        const canExecute = this.onValidate();
 
-       /*if (this.state.recordMode == this.RecordMode.Login)
-            Alert.alert('Aviso', 'login')
+        if (!canExecute)
+            return;
+
+        if (this.state.recordMode == this.RecordMode.Login)
+            this.makeLogin()
         else
-            Alert.alert('Aviso', 'registros');*/
-            
+            this.makeRegister();
+
     }
 
     render() {
+
+        const isValidName = this.state.name.trim().length > 0;
+        const isValidEMail = this.state.email.includes('@');
+        const isValidPassword = this.state.password.length > 6;
+        const isValidConfirmPassword = this.state.password == this.state.confirmPassword && this.state.confirmPassword.length > 6;
+
         return (
             <ImageBackground
                 source={backgroundImage}
@@ -47,7 +143,7 @@ export default class Authentication extends Component {
                                 <Icon style={styles.iconInput} name={"md-contact"} size={22} color={"#00CD66"} />
                                 <TextInput
                                     placeholder='Nome'
-                                    style={styles.input}
+                                    style={[styles.input, isValidName ? styles.validInput : {}]}
                                     value={this.state.name}
                                     onChangeText={name => this.setState({ name })}
                                 ></TextInput>
@@ -56,10 +152,10 @@ export default class Authentication extends Component {
                     }
 
                     <View style={styles.inputContainer}>
-                        <Icon style={styles.iconInput} name={"md-contact"} size={22} color={"#00CD66"} />
+                        <Icon style={styles.iconInput} name={"md-at"} size={22} color={"#00CD66"} />
                         <TextInput
                             placeholder='E-Mail'
-                            style={styles.input}
+                            style={[styles.input, isValidEMail ? styles.validInput : {}]}
                             value={this.state.email}
                             onChangeText={email => this.setState({ email })}
                         ></TextInput>
@@ -68,8 +164,9 @@ export default class Authentication extends Component {
                     <View style={styles.inputContainer}>
                         <Icon style={styles.iconInput} name={"md-key"} size={22} color={"#00CD66"} />
                         <TextInput
+                            secureTextEntry = { true }
                             placeholder='Senha'
-                            style={styles.input}
+                            style={[styles.input, isValidPassword ? styles.validInput : {}]}
                             value={this.state.password}
                             onChangeText={password => this.setState({ password })}
                         ></TextInput>
@@ -81,8 +178,9 @@ export default class Authentication extends Component {
                             <View style={styles.inputContainer}>
                                 <Icon style={styles.iconInput} name={"md-key"} size={22} color={"#00CD66"} />
                                 <TextInput
+                                    secureTextEntry = { true }
                                     placeholder='Repita a Senha'
-                                    style={styles.input}
+                                    style={[styles.input, isValidConfirmPassword ? styles.validInput : {}]}
                                     value={this.state.confirmPassword}
                                     onChangeText={confirmPassword => this.setState({ confirmPassword })}
                                 ></TextInput>
@@ -144,13 +242,19 @@ const styles = StyleSheet.create({
     },
     input: {
         backgroundColor: 'rgba(255, 255, 255, 0.4)',
-        color: "#282629",
+        color: "white",
+        fontWeight: 'bold',
         marginTop: 10,
         width: '100%',
         height: 35,
         borderRadius: 6,
         paddingLeft: 30,
+        borderColor: 'gray',
+        borderWidth: 2,
     },
+    validInput: {
+        borderColor: 'white',
+    },  
     button: {
         marginTop: 10,
         width: '90%',

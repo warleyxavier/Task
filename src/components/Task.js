@@ -46,8 +46,8 @@ export default class Task extends Component {
                         </TouchableWithoutFeedback>                  
                     </View>            
                     <View> 
-                        <Text style = {[styles.description, this.props.doneAt !== null ? {textDecorationLine: "line-through"} : {} ]}> {this.props.description} </Text>  
-                        <Text style = {styles.date}>{moment(this.props.estimateAt).locale("pt-br").format("ddd, D [de] MMMM")}</Text>                    
+                        <Text style = {[styles.description, this.props.doneAt !== null ? {textDecorationLine: "line-through"} : {} ]}>{this.props.description}</Text>  
+                        <Text style = {styles.date}>{moment(this.props.estimatAt).locale("pt-br").format("ddd, D [de] MMMM [de] YYYY")}</Text>                                                         
                     </View>
                 </View>
 

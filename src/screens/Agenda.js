@@ -1,14 +1,21 @@
 import React, { Component } from "react";
-import { AsyncStorage, FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import ActionButton from "react-native-action-button";
+import axios from "axios";
+import { Container } from "typedi";
 import moment from "moment";
 import "moment/locale/pt-br";
 
 import CommomStyles from "../styles/CommomStyles";
-import todayImage from "../../assets/imgs/today.jpg";
 import Task from "../components/Task";
 import TaskRegister from "../screens/TaskRegister";
+import Config from "../../config/Config";
+
+import todayImage from "../../assets/imgs/today.jpg";
+import tomorrowImage from "../../assets/imgs/tomorrow.jpg";
+import weekImage from "../../assets/imgs/week.jpg";
+import monthImage from "../../assets/imgs/month.jpg";
 export default class App extends Component {
 
     state = {
@@ -19,34 +26,64 @@ export default class App extends Component {
     }
 
     componentDidMount = async () => {
+        await this.loadTasks();
+    }
 
-        const data = AsyncStorage.getItem("Tasks:tasks");
-        const tasks = JSON.parse(data) || [];
+    loadTasks = async () => {
 
-        this.setState({ tasks }, this.filterTasks());
+        try {
+
+            const maxDate = moment().add({ days: this.props.daysAHead }).format('YYYY.MM.DD');
+
+            const response = await axios.create({
+                baseURL: Config.serverHost,
+                headers: { 'Authorization': Container.get('web-token') },    
+            }).get(`tasks/${maxDate}`);
+
+            await this.setState({ tasks: response.data });
+            this.filterTasks()
+            
+        } catch (error) {
+           Alert.alert('Aviso', 'Deu ruim');
+        }
 
     }
 
-    addTask = task => {
+    addTask = async task => {
 
-        const tasks = [...this.state.tasks];
+        try {
 
-        tasks.push({
-            id: Math.random(),
-            description: task.description,
-            estimateAt: task.date,
-            doneAt: null,
-        });
+            await axios.create({
+                baseURL: Config.serverHost,
+                headers: { 'Authorization': Container.get('web-token') },    
+            }).post('tasks/', {
+                description: task.description,
+                estimatAt: task.date,
+            });
 
-        this.setState({ tasks, showTaskRegister: false }, this.filterTasks);
+            this.setState({ showTaskRegister: false }); 
+            this.loadTasks();    
+            
+        } catch (error) {
+           Alert.alert('Aviso', 'Deu ruim');
+        }
 
     }
 
-    deleteTask = id => {
+    deleteTask = async id => {
 
-        const tasks = this.state.tasks.filter( task => task.id !== id);
+        try {
 
-        this.setState({ tasks }, this.filterTasks);
+            await axios.create({
+                baseURL: Config.serverHost,
+                headers: { 'Authorization': Container.get('web-token') },    
+            }).delete(`tasks/${id}`);
+
+            this.loadTasks();    
+            
+        } catch (error) {
+           Alert.alert('Aviso', 'Deu ruim');
+        }
 
     }
 
@@ -62,8 +99,6 @@ export default class App extends Component {
 
         this.setState({ visibleTasks });
 
-        AsyncStorage.setItem("Tasks:tasks", JSON.stringify(this.state.tasks));
-
     }
 
     toggleFilter = () => {
@@ -72,24 +107,51 @@ export default class App extends Component {
 
     }
 
-    toggleTask = id => {
+    toggleTask = async id => {
 
-        const tasks = [ ...this.state.tasks ];
+        try {
 
-        tasks.forEach( task => {
+            await axios.create({
+                baseURL: Config.serverHost,
+                headers: { 'Authorization': Container.get('web-token') },    
+            }).put(`tasks/${id}`);
 
-            if (task.id === id) {
-                task.doneAt = task.doneAt ? null : new Date();
-                return true;
-            }
-
-        });
-
-        this.setState({ tasks }, this.filterTasks);
+            this.loadTasks();    
+            
+        } catch (error) {
+           Alert.alert('Aviso', 'Deu ruim');
+        }
 
     }
 
     render() {
+
+        let image = null;
+        let color = null;
+        
+
+
+        switch(this.props.daysAHead) {
+
+            case 0: 
+                image = todayImage;
+                color = CommomStyles.colors.today;
+                break;
+            case 1:
+                image = tomorrowImage;
+                color = CommomStyles.colors.tomorrow;
+                break;
+            case 7:
+                image = weekImage;
+                color = CommomStyles.colors.week;
+                break;
+            default:
+                image = monthImage;
+                color = CommomStyles.colors.month;
+                break;
+
+        }
+
 		return (
 			<View style={styles.container}>
 
@@ -99,14 +161,17 @@ export default class App extends Component {
                     onCancel = { () => this.setState({ showTaskRegister: false }) }
                 />
 
-                <ImageBackground source={todayImage} style={styles.background}>
+                <ImageBackground source={ image } style={styles.background}>
                     <View style = {styles.iconBar}>
+                        <TouchableOpacity onPress = {() => this.props.navigation.openDrawer()}>
+                            <Icon name = 'md-menu' size = { 30 } color = { CommomStyles.colors.secondary } />
+                        </TouchableOpacity>
                         <TouchableOpacity onPress = {this.toggleFilter}>
                             <Icon name = { this.state.showDoneTasks ? "md-eye": "md-eye-off" } size = {30} color = {CommomStyles.colors.secondary} />    
                         </TouchableOpacity>
                     </View>
                     <View style={styles.titleBar}>
-                        <Text style={styles.title}>Hoje </Text> 
+                        <Text style={styles.title}>{this.props.title}</Text> 
                         <Text style={styles.subTitle}>{moment().locale("pt-br").format("ddd, D [de] MMMM")}</Text>  
                     </View>
                 </ImageBackground>
@@ -118,7 +183,7 @@ export default class App extends Component {
                     />                    
                 </View>
                 <ActionButton 
-                    buttonColor = {CommomStyles.colors.today}
+                    buttonColor = { color }
                     onPress = { () => { this.setState( { showTaskRegister: true } ) } } />
             </View>
 		); 	
@@ -155,9 +220,9 @@ const styles = StyleSheet.create({
         flex: 7,
     },
     iconBar: {
-        marginTop: 30, // Platform.OS === "ios" ? 
+        marginTop: 30,
         marginHorizontal: 20,
         flexDirection: "row",
-        justifyContent: "flex-end",
+        justifyContent: "space-between",
     },
 });
