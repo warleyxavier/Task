@@ -62,6 +62,8 @@ export default class Authentication extends Component {
             }).get(`usuarios/login/${this.state.email}/${this.state.password}`);
 
             const token = response.data.token;
+            const userName = response.data.name;
+            const userEmail = response.data.email;
 
             if (isNullOrUndefined(token)) {
                 const message = (!isNullOrUndefined(response.data.message) ? response.data.message : 'Não foi possível realizar o login!'); 
@@ -69,7 +71,7 @@ export default class Authentication extends Component {
                 return;
             }
 
-            await Container.set('web-token', token);
+            await Container.set('user', response.data);
 
             this.props.navigation.navigate('Home');
 

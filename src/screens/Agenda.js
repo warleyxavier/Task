@@ -23,9 +23,14 @@ export default class App extends Component {
         visibleTasks: [],
         showDoneTasks: true,
         showTaskRegister: false,
+        user: {},
     }
 
     componentDidMount = async () => {
+        await this.setState({ user: Container.get('user') });
+
+        console.log(this.state.user);
+
         await this.loadTasks();
     }
 
@@ -37,7 +42,7 @@ export default class App extends Component {
 
             const response = await axios.create({
                 baseURL: Config.serverHost,
-                headers: { 'Authorization': Container.get('web-token') },    
+                headers: { 'Authorization': this.state.user.token },    
             }).get(`tasks/${maxDate}`);
 
             await this.setState({ tasks: response.data });
@@ -55,7 +60,7 @@ export default class App extends Component {
 
             await axios.create({
                 baseURL: Config.serverHost,
-                headers: { 'Authorization': Container.get('web-token') },    
+                headers: { 'Authorization': this.state.user.token },    
             }).post('tasks/', {
                 description: task.description,
                 estimatAt: task.date,
@@ -76,7 +81,7 @@ export default class App extends Component {
 
             await axios.create({
                 baseURL: Config.serverHost,
-                headers: { 'Authorization': Container.get('web-token') },    
+                headers: { 'Authorization': this.state.user.token },    
             }).delete(`tasks/${id}`);
 
             this.loadTasks();    
@@ -113,7 +118,7 @@ export default class App extends Component {
 
             await axios.create({
                 baseURL: Config.serverHost,
-                headers: { 'Authorization': Container.get('web-token') },    
+                headers: { 'Authorization': this.state.user.token },    
             }).put(`tasks/${id}`);
 
             this.loadTasks();    
@@ -127,9 +132,7 @@ export default class App extends Component {
     render() {
 
         let image = null;
-        let color = null;
-        
-
+        let color = null;      
 
         switch(this.props.daysAHead) {
 

@@ -3,6 +3,7 @@ import { createAppContainer, createDrawerNavigator, createSwitchNavigator } from
 
 import CommomStyles from "../styles/CommomStyles";
 
+import Menu from "../components/Menu";
 import Authentication from "../screens/Authentication";
 import Agenda from "../screens/Agenda";
 
@@ -41,6 +42,7 @@ MenuRoutes = {
 
 const MenuNavigator = createDrawerNavigator(MenuRoutes, {
     initialRouteName: 'Today',
+    contentComponent: Menu,
     contentOptions: {
         labelStyle: {
             fontFamily: CommomStyles.fontFamily,
