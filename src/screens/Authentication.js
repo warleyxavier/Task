@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Alert, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { AsyncStorage, Alert, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { isNullOrUndefined } from "util";
 import { Container } from "typedi";
@@ -57,13 +57,10 @@ export default class Authentication extends Component {
 
         try {
                     
-            const response = await axios.create({
-                baseURL: Config.serverHost   
-            }).get(`usuarios/login/${this.state.email}/${this.state.password}`);
+            const response = await axios.get(`usuarios/login/${this.state.email}/${this.state.password}`);
+
 
             const token = response.data.token;
-            const userName = response.data.name;
-            const userEmail = response.data.email;
 
             if (isNullOrUndefined(token)) {
                 const message = (!isNullOrUndefined(response.data.message) ? response.data.message : 'Não foi possível realizar o login!'); 
@@ -72,6 +69,9 @@ export default class Authentication extends Component {
             }
 
             await Container.set('user', response.data);
+            await AsyncStorage.setItem("Task:userLogged", JSON.stringify(response.data));
+
+            axios.defaults.headers = { 'Authorization': response.data.token };
 
             this.props.navigation.navigate('Home');
 
@@ -85,9 +85,7 @@ export default class Authentication extends Component {
 
         try {
         
-            await axios.create({
-                baseURL: Config.serverHost   
-            }).post('usuarios/', {
+            await axios.post('usuarios/', {
                 nome: this.state.name,
                 email: this.state.email,
                 senha: this.state.password,  
@@ -127,6 +125,9 @@ export default class Authentication extends Component {
         const isValidConfirmPassword = this.state.password == this.state.confirmPassword && this.state.confirmPassword.length > 6;
 
         return (
+
+            
+
             <ImageBackground
                 source={backgroundImage}
                 style={styles.backgroundContainer}

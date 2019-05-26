@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {AsyncStorage, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { DrawerItems } from "react-navigation";
 import { Container } from "typedi";
@@ -8,23 +8,40 @@ import CommomStyles from "../styles/CommomStyles";
 
 export default class Menu extends Component {
 
-    render() {
+    state = {
+        user: {},
+    }
 
-        let userName = Container.get('user').name;
-        let userEmail = Container.get('user').email;
+    componentDidMount = async () => {
+        await this.setState({ user: Container.get('user') });
+    }
+
+    logoutApplication = async () => {
+        await AsyncStorage.removeItem("Task:userLogged");
+        await Container.set('user', null);
+
+        this.props.navigation.navigate('Authentication');
+
+    } 
+
+    render() {
 
         return(
             <ScrollView style = { styles.container }>
 
                 <View style = { styles.header }>
-                    <Icon style = {styles.iconHeader} name={"md-text"} size={90} color={"#00CD66"} />
-                    <Text style = {styles.nameHeader}>{userName}</Text>
-                    <Text style = {styles.emailHeader}>{userEmail}</Text>
+                    <Icon style = {styles.iconHeader} name={"md-text"} size={80} color={"#00CD66"} />
+                    <Text style = {styles.nameHeader}>{this.state.user.name}</Text>
+                    <Text style = {styles.emailHeader}>{this.state.user.email}</Text>
                 </View>
                 <View style = { styles.menuItems }>
                     <DrawerItems { ...this.props } />
                 </View>
-                <View style = {styles.logout}>
+                <View>
+                    <TouchableOpacity style = {styles.logoutButton} onPress = { () => this.logoutApplication() } >
+                        <Icon style = {styles.iconHeader} name={"md-power"} size={30} color={"white"} />
+                        <Text style = {styles.logoutText} >Sair</Text>
+                    </TouchableOpacity>
                 </View>
 
             </ScrollView>
@@ -39,8 +56,8 @@ const styles = StyleSheet.create({
         paddingVertical: 25,
     },
     header: {
-        flex: 3,
         alignItems: 'center',
+        marginBottom: 20,
     },
     iconHeader: {
 
@@ -56,10 +73,19 @@ const styles = StyleSheet.create({
         color: '#7a7a52',
     },
     menuItems: {
-        flex: 6,
+        marginBottom: 20,
     },
-    logout: {
-        flex: 1,
-        backgroundColor: 'red',
+    logoutButton: {
+        height: 50,
+        flexDirection: 'row',
+        backgroundColor: '#1f1f14',
+        alignItems: "center",
+        paddingHorizontal: 15,
+    },
+    logoutText: {
+        fontSize: 20,
+        color: 'white',
+        fontWeight: 'bold',
+        marginLeft: 30,
     },
 });

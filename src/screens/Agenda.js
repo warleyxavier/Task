@@ -28,10 +28,7 @@ export default class App extends Component {
 
     componentDidMount = async () => {
         await this.setState({ user: Container.get('user') });
-
-        console.log(this.state.user);
-
-        await this.loadTasks();
+        this.loadTasks();
     }
 
     loadTasks = async () => {
@@ -40,10 +37,7 @@ export default class App extends Component {
 
             const maxDate = moment().add({ days: this.props.daysAHead }).format('YYYY.MM.DD');
 
-            const response = await axios.create({
-                baseURL: Config.serverHost,
-                headers: { 'Authorization': this.state.user.token },    
-            }).get(`tasks/${maxDate}`);
+            const response = await axios.get(`tasks/${maxDate}`);
 
             await this.setState({ tasks: response.data });
             this.filterTasks()
@@ -58,10 +52,7 @@ export default class App extends Component {
 
         try {
 
-            await axios.create({
-                baseURL: Config.serverHost,
-                headers: { 'Authorization': this.state.user.token },    
-            }).post('tasks/', {
+            await axios.post('tasks/', {
                 description: task.description,
                 estimatAt: task.date,
             });
@@ -79,10 +70,7 @@ export default class App extends Component {
 
         try {
 
-            await axios.create({
-                baseURL: Config.serverHost,
-                headers: { 'Authorization': this.state.user.token },    
-            }).delete(`tasks/${id}`);
+            await axios.delete(`tasks/${id}`);
 
             this.loadTasks();    
             
@@ -116,10 +104,7 @@ export default class App extends Component {
 
         try {
 
-            await axios.create({
-                baseURL: Config.serverHost,
-                headers: { 'Authorization': this.state.user.token },    
-            }).put(`tasks/${id}`);
+            await axios.put(`tasks/${id}`);
 
             this.loadTasks();    
             
